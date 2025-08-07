@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pi Auto Claim</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --border-glow: rgba(0, 255, 255, 0.2);
+      --text-color: #ffffffcc;
+      --accent: #00ffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f0f1f, #1a1a2e, #16213e);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-color);
+      padding: 20px;
+    }
+
+    .container {
+      background: var(--glass-bg);
+      border: 1px solid var(--border-glow);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,255,255,0.1);
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 15px;
+      font-size: 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      resize: none;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 30px;
+      background: var(--accent);
+      border: none;
+      color: black;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #00dddd;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚀 Pi Auto Claim & Withdraw</h2>
+    <textarea id="mnemonic" placeholder="Masukkan 24 kata mnemonic..."></textarea><br>
+    <button onclick="submit()">CLAIM & KIRIM</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    async function submit() {
+      const mnemonic = document.getElementById('mnemonic').value.trim();
+      if (!mnemonic || mnemonic.split(' ').length < 24) {
+        document.getElementById('status').innerText = '❌ Masukkan 24 kata mnemonic dengan benar.';
+        return;
+      }
+
+      document.getElementById('status').innerText = '⏳ Memproses...';
+
+      try {
+        const res = await fetch('/claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mnemonic })
+        });
+
+        const data = await res.json();
+        document.getElementById('status').innerText = data.message || data.error || '✅ Berhasil!';
+      } catch (err) {
+        document.getElementById('status').innerText = '❌ Gagal menghubungi server.';
+      }
+    }
+  </script>
+</body>
+</html>
